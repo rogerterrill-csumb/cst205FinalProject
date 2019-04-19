@@ -1,0 +1,11 @@
+*.pybak
+*.pylog
+/.idea
+*.jpeg
+*.zip
+/All_Labs
+*.wav
+/venv
+/.idea
+*.xml
+*.iml
