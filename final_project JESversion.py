@@ -5,34 +5,17 @@ __version__ = "1.0.1"
 __email__ = "rchicasterrill@csumb.edu, apackham@csumb.edu, cordunacorrales@csumb.edu  "
 __status__ = "Production"
 
-
-def sound(sound_file):
-    sound = makeSound(sound_file)
-    targetIndex = 0
-    clip = makeEmptySound(15340)
-    for ii in range(0, 15340):
-        x = getSampleValueAt(sound, ii)
-        setSampleValueAt(clip, targetIndex, x)
-        targetIndex = targetIndex + 1
-    max = maxVolume(clip)
-    play(clip)
-
-
-def maxSample(sound):
-    max_val = 0
-    for sample in getSamples(sound):
-        max_val = max(max_val, getSampleValue(sample))
-    return max_val
-
-
-def maxVolume(sound):
-    largest = maxSample(sound)
-    maxPossibleSampleValue = 32767.0
-    factor = float(maxPossibleSampleValue) / largest
-    for sample in getSamples(sound):
-        value = getSampleValue(sample)
-        setSampleValue(sample, value * factor)
-    return sample
+def win_lose_sound(sound_file):
+  sound = makeSound(sound_file)
+  length = getLength(sound)
+  sample_rate = int(getSamplingRate(sound))
+  index = 0
+  reverse_sound = makeEmptySound(length, sample_rate)
+  for sample in getSamples(sound):
+    value = getSampleValue(sample)
+    setSampleValueAt(reverse_sound, length - index - 1, value)
+    index = index + 1
+  play(reverse_sound)
 
 
 def resize(pic):
@@ -48,22 +31,20 @@ def resize(pic):
     return target
 
 
-def win_image(image_file):
+def win_image(image_file, name):
     pic = makePicture(image_file)
     pic = resize(pic)
     pixels = getPixels(pic)
-    for p in pixels:
-        newColor = makeColor(getRed(p) + 50, getGreen(p) + 50, getBlue(p) + 50)
-        setColor(p, newColor)
 
-    phrase = "You win!"
+    phrase = "GREAT JOB"
     import java.awt.Font as Font
     myFont = makeStyle("Comic Sans", Font.BOLD, 80)
-    addTextWithStyle(pic, 350, 500, phrase, myFont, black)
+    addTextWithStyle(pic, 100, 500, phrase, myFont, white)
+    addTextWithStyle(pic, 100, 600, name, myFont, white)
     repaint(pic)
 
 
-def lose_image(image_file):
+def lose_image(image_file, name):
     pic = makePicture(image_file)
     pic = resize(pic)
     pixels = getPixels(pic)
@@ -72,19 +53,12 @@ def lose_image(image_file):
         newColor = makeColor(avg_color, avg_color, avg_color)
         setColor(p, newColor)
 
-    phrase = "You lose."
+    phrase = "Better luck next time"
     import java.awt.Font as Font
     myFont = makeStyle("Comic Sans", Font.BOLD, 80)
-    addTextWithStyle(pic, 350, 500, phrase, myFont, red)
+    addTextWithStyle(pic, 100, 500, phrase, myFont, red)
+    addTextWithStyle(pic, 100, 600, name, myFont, red)
     repaint(pic)
-
-
-def win():
-    setMediaPath()
-    win_image = getMediaPath() + 'win.jpg'
-    lose_image = getMediaPath() + 'lose.jpg'
-    win_sound = getMediaPath() + 'win.wav'
-    lose_sound = getMediaPath() + 'lose.wav'
 
 
 class Player:
@@ -191,6 +165,8 @@ class TowerStart(Tile):
             print "Nobody was damaged and the remaining flyings pigs are taken care of.\n\n"
             print "However you thought you'd never see the day pigs fly... It is time we take our planet away from them!"
             print "You have won today!"
+            print "Now wait a moment as you recieve your PRIZE!!!"
+            
             return True
         else:
             print "\nYou are missing resources!!!!!!!! Hurry!!!!"
@@ -381,7 +357,7 @@ def main():
     win_sound_file = getMediaPath() + 'win.wav'
     lose_sound_file = getMediaPath() + 'lose.wav'
 
-    init_move = 20
+    init_move = 1
     resources = []
     direction = ''
     win_condition = False
@@ -396,6 +372,7 @@ def main():
     sanctuary = Sanctuary(3, 1, player_1, 'w', 'n')
 
     welcome()
+    name = raw_input("What is your name? ").upper()
 
     location = onlook_tower_start
     location.print_room_text()
@@ -408,7 +385,11 @@ def main():
             location = room_execute(onlook_tower_start)
             if 'Radar' in player_1.resources:
                 location.take_resource()
-            win_condition = location.win()
+            if location.win() == True:
+              win_condition = location.win()
+              win_image(win_image_file, name)
+              reverse(win_sound_file)
+              
         elif location.print_room() == (1, 1):
             location = room_execute(barracks)
         elif location.print_room() == (1, 2):
@@ -439,3 +420,6 @@ def main():
         print "**********-You Lose-**********"
         print "It's too late... You thought you'd never see the day but, the day pigs fly is here and nobody believed you."
         print "You brace yourself as the pink menace opens fire to the island..."
+        print "Wait a moment as we print out a surprise for you..."
+        lose_image(lose_image_file, name)
+        reverse(lose_sound_file)
