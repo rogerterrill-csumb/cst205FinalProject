@@ -112,14 +112,18 @@ class Tile(object):
         if direction in self.args:
             if direction == 'n':
                 self.y += 1
+                self.player.moves -= 1
             elif direction == 'e':
                 self.x += 1
+                self.player.moves -= 1
             elif direction == 's':
                 self.y -= 1
+                self.player.moves -= 1
             elif direction == 'w':
                 self.x -= 1
+                self.player.moves -= 1
         else:
-            print "You can't go that way"
+            print "######You can't go that way########"
 
     def print_room(self):
         # print self.x, self.y
@@ -187,7 +191,7 @@ class TowerStart(Tile):
             print "Nobody was damaged and the remaining flyings pigs are taken care of.\n\n"
             print "However you thought you'd never see the day pigs fly... It is time we take our planet away from them!"
             print "You have won today!"
-            return 'win'
+            return True
         else:
             print "\nYou are missing resources!!!!!!!! Hurry!!!!"
 
@@ -363,11 +367,10 @@ class Sanctuary(Tile):
             print "Already been here and taken the People Safe"
 
 
-def room_execute(room, player):
+def room_execute(room):
     location = room
     location.reset()
     location.print_room_text()
-    player.moves -= 1
     return location
 
 
@@ -381,6 +384,7 @@ def main():
     init_move = 20
     resources = []
     direction = ''
+    win_condition = False
     player_1 = Player(init_move, resources)
     onlook_tower_start = TowerStart(0, 1, player_1, 'e')
     barracks = Barracks(1, 1, player_1, 'n', 'e', 'w', 's')
@@ -396,42 +400,42 @@ def main():
     location = onlook_tower_start
     location.print_room_text()
 
-    while direction != 'win' and direction != 'quit' and player_1.moves > 0:
+    while direction != 'win' and direction != 'quit' and player_1.moves > 0 and not win_condition:
         player_1.print_stats()
         direction = raw_input("What direction do you want to go [n,w,s,e]? ").lower()
         location.move(direction)
         if location.print_room() == (0, 1):
-            location = room_execute(onlook_tower_start, player_1)
+            location = room_execute(onlook_tower_start)
             if 'Radar' in player_1.resources:
                 location.take_resource()
-            direction = location.win()
+            win_condition = location.win()
         elif location.print_room() == (1, 1):
-            location = room_execute(barracks, player_1)
+            location = room_execute(barracks)
         elif location.print_room() == (1, 2):
-            location = room_execute(artillery, player_1)
+            location = room_execute(artillery)
             if 'Proof' in player_1.resources:
                 location.take_resource()
         elif location.print_room() == (1, 0):
-            location = room_execute(laboratory, player_1)
+            location = room_execute(laboratory)
             if 'Scientist' in player_1.resources:
                 location.take_resource()
         elif location.print_room() == (2, 1):
-            location = room_execute(citadel, player_1)
+            location = room_execute(citadel)
             location.take_resource()
             if 'Frogs' in player_1.resources:
                 location.take_wyvern()
         elif location.print_room() == (2, 2):
-            location = room_execute(suburbs, player_1)
+            location = room_execute(suburbs)
             location.take_resource()
         elif location.print_room() == (3, 2):
-            location = room_execute(lake, player_1)
+            location = room_execute(lake)
             if 'Frog Net' in player_1.resources:
                 location.take_resource()
         elif location.print_room() == (3, 1):
-            location = room_execute(sanctuary, player_1)
+            location = room_execute(sanctuary)
             location.take_resource()
 
-    if direction == 'lose':
+    if player_1.moves == 0:
         print "**********-You Lose-**********"
         print "It's too late... You thought you'd never see the day but, the day pigs fly is here and nobody believed you."
         print "You brace yourself as the pink menace opens fire to the island..."
