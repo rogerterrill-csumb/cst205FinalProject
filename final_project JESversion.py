@@ -251,7 +251,7 @@ def main():
     # lose_image_file = getMediaPath() + 'lose.jpg'
     # win_sound_file = getMediaPath() + 'win.wav'
     # lose_sound_file = getMediaPath() + 'lose.wav'
-
+    welcome()
     init_move = 20
     resources = []
     direction = ''
@@ -265,7 +265,7 @@ def main():
     lake = Lake(3, 2, player_1, 'n', 'e', 'w')
     sanctuary = Sanctuary(3, 1, player_1, 'n', 'e', 'w')
 
-    welcome()
+    
 
     location = onlook_tower_start
     location.print_room_text()
@@ -293,5 +293,3 @@ def main():
             location = room_execute(sanctuary, player_1)
 
 
-if __name__ == '__main__':
-    main()
