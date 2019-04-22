@@ -5,17 +5,18 @@ __version__ = "1.0.1"
 __email__ = "rchicasterrill@csumb.edu, apackham@csumb.edu, cordunacorrales@csumb.edu  "
 __status__ = "Production"
 
+
 def win_lose_sound(sound_file):
-  sound = makeSound(sound_file)
-  length = getLength(sound)
-  sample_rate = int(getSamplingRate(sound))
-  index = 0
-  reverse_sound = makeEmptySound(length, sample_rate)
-  for sample in getSamples(sound):
-    value = getSampleValue(sample)
-    setSampleValueAt(reverse_sound, length - index - 1, value)
-    index = index + 1
-  play(reverse_sound)
+    sound = makeSound(sound_file)
+    length = getLength(sound)
+    sample_rate = int(getSamplingRate(sound))
+    index = 0
+    reverse_sound = makeEmptySound(length, sample_rate)
+    for sample in getSamples(sound):
+        value = getSampleValue(sample)
+        setSampleValueAt(reverse_sound, length - index - 1, value)
+        index = index + 1
+    play(reverse_sound)
 
 
 def resize(pic):
@@ -155,7 +156,6 @@ class TowerStart(Tile):
         else:
             print "The Comander is waiting impatiently for any means to prove the message.\n"
 
-
     def win(self):
         if 'Radar' in self.player.resources and 'Wyvern' in self.player.resources and 'People Safe' in self.player.resources:
             print "**********-You Win!-**********"
@@ -166,7 +166,7 @@ class TowerStart(Tile):
             print "However you thought you'd never see the day pigs fly... It is time we take our planet away from them!"
             print "You have won today!"
             print "Now wait a moment as you recieve your PRIZE!!!"
-            
+
             return True
         else:
             print "\nYou are missing resources!!!!!!!! Hurry!!!!"
@@ -187,6 +187,7 @@ class Barracks(Tile):
         print "-Go 'e' to the Citadel"
         print "-Go 'w' to the Onlook tower"
         print "-Go 's' to the Lab\n\n"
+
 
 class Artillery(Tile):
     def __init__(self, x, y, *args):
@@ -211,6 +212,7 @@ class Artillery(Tile):
             print "Already been here and taken the Artillery Manned"
             print "Let's hurry before it is too late!\n"
 
+
 class Laboratory(Tile):
     def __init__(self, x, y, *args):
         super(Laboratory, self).__init__(x, y, *args)
@@ -232,6 +234,7 @@ class Laboratory(Tile):
         else:
             print "Already been here and taken the radar"
             print "Let's hurry before it is too late!\n"
+
 
 class Citadel(Tile):
     def __init__(self, x, y, *args):
@@ -271,6 +274,7 @@ class Citadel(Tile):
         else:
             print "Already been here and taken the Wyvern"
 
+
 class Suburbs(Tile):
     def __init__(self, x, y, *args):
         super(Suburbs, self).__init__(x, y, *args)
@@ -295,7 +299,6 @@ class Suburbs(Tile):
             self.player.resources.append('Scientist')
         else:
             print "Already been here and taken the Scientist"
-
 
 
 class Lake(Tile):
@@ -357,7 +360,7 @@ def main():
     win_sound_file = getMediaPath() + 'win.wav'
     lose_sound_file = getMediaPath() + 'lose.wav'
 
-    init_move = 1
+    init_move = 20
     resources = []
     direction = ''
     win_condition = False
@@ -386,10 +389,10 @@ def main():
             if 'Radar' in player_1.resources:
                 location.take_resource()
             if location.win() == True:
-              win_condition = location.win()
-              win_image(win_image_file, name)
-              reverse(win_sound_file)
-              
+                win_condition = True
+                win_image(win_image_file, name)
+                reverse(win_sound_file)
+
         elif location.print_room() == (1, 1):
             location = room_execute(barracks)
         elif location.print_room() == (1, 2):

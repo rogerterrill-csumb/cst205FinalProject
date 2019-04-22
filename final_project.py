@@ -19,23 +19,6 @@ def win_lose_sound(sound_file):
     play(reverse_sound)
 
 
-def maxSample(sound):
-    max_val = 0
-    for sample in getSamples(sound):
-        max_val = max(max_val, getSampleValue(sample))
-    return max_val
-
-
-def maxVolume(sound):
-    largest = maxSample(sound)
-    maxPossibleSampleValue = 32767.0
-    factor = float(maxPossibleSampleValue) / largest
-    for sample in getSamples(sound):
-        value = getSampleValue(sample)
-        setSampleValue(sample, value * factor)
-    return sample
-
-
 def resize(pic):
     width = getWidth(pic)
     height = getHeight(pic)
@@ -406,7 +389,7 @@ def main():
             if 'Radar' in player_1.resources:
                 location.take_resource()
             if location.win() == True:
-                win_condition = location.win()
+                win_condition = True
                 win_image(win_image_file, name)
                 reverse(win_sound_file)
 
